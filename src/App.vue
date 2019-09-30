@@ -1,31 +1,51 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <TheNavBar />
+    <div class="container">
+      <router-view v-show="showPage" @ready="pageReady" />
+      <AppSpinner v-show="!showPage" />
     </div>
-    <router-view />
   </div>
 </template>
+<script>
+import NProgress from "nprogress";
+import AppSpinner from "./components/AppSpinner.vue";
+import TheNavBar from "./components/TheNavBar.vue";
+export default {
+  components: {
+    TheNavBar,
+    AppSpinner
+  },
+  data() {
+    return {
+      showPage: false
+    };
+  },
+  methods: {
+    pageReady() {
+      this.showPage = true;
+      NProgress.done();
+    }
+  },
+  created() {
+    NProgress.configure({
+      speed: 200,
+      showSpinner: false
+    });
+    NProgress.start();
+    this.$router.beforeEach((to, from, next) => {
+      this.showPage = false;
+
+      next();
+    });
+  }
+};
+</script>
 
 <style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+@import "./assets/css/style.css";
+@import "`nprogress/nprogress.css";
+#nprogress .bar {
+  background: #57ad8d;
 }
 </style>
